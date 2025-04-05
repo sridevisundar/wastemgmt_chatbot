@@ -1,0 +1,6 @@
+# Ignore dataset-augmented folder
+dataset-augmented/
+
+# Ignore Jupyter notebooks
+01_mobilenetv2.ipynb
+02_webscraping.ipynb
