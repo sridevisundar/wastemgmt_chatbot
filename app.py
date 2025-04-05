@@ -7,23 +7,17 @@ import os
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-#from dotenv import load_dotenv
-
-# ✅ Load environment variables
 from dotenv import load_dotenv
 import os
 
-client = Groq(api_key="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")
+client = Groq(api_key="ENTER_YOUR_GROQ_API_KEY")
 
-# ✅ Ensure compatibility with Windows asyncio
+# Ensure compatibility with Windows asyncio
 import asyncio
 if os.name == "nt":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# ✅ Initialize Groq client
-
-
-# ✅ Load data from JSON file
+# Load data from JSON file
 def load_data(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
@@ -31,23 +25,23 @@ def load_data(file_path):
             raise ValueError("Invalid JSON format: Expected a dictionary.")
         return list(data.values())
 
-# ✅ Initialize ChromaDB client and collection
+# Initialize ChromaDB client and collection
 @st.cache_resource
 def init_chroma_db():
     client = chromadb.PersistentClient(path="./chroma_db")
     return client.get_or_create_collection(name="waste_management_rag")
 
-# ✅ Load MobileNetV2 model
+# Load MobileNetV2 model
 @st.cache_resource
 def load_mobilenet_model():
     return tf.keras.models.load_model("mobilenetv2_model.h5")
 
-# ✅ Load embeddings model
+# Load embeddings model
 @st.cache_resource
 def get_embedding_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
-# ✅ Load data into ChromaDB
+# Load data into ChromaDB
 def load_into_chroma(data, collection, embedding_model):
     existing_ids = set(collection.get()["ids"]) if collection.count() > 0 else set()
 
@@ -76,11 +70,11 @@ def load_into_chroma(data, collection, embedding_model):
         embeddings=embeddings
     )
 
-# ✅ Query Groq for text-based answers
+# Query Groq for text-based answers
 def query_groq(prompt):
     try:
         response = client.chat.completions.create(
-            model="llama3-8b-8192",  # Use "mixtral" or another Groq model if needed
+            model="llama3-8b-8192",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4096
         )
@@ -88,7 +82,7 @@ def query_groq(prompt):
     except Exception as e:
         return f"❌ API Error: {e}"
 
-# ✅ Get relevant context from ChromaDB
+# Get relevant context from ChromaDB
 def get_relevant_context(query, collection, embedding_model, top_k=3):
     query_embedding = embedding_model.encode(query).tolist()
     results = collection.query(
@@ -110,7 +104,7 @@ def get_relevant_context(query, collection, embedding_model, top_k=3):
 
     return filtered_docs[:top_k] if filtered_docs else []
 
-# ✅ Answer question using retrieved context
+# Answer question using retrieved context
 def ask_question(question, collection, embedding_model):
     context = get_relevant_context(question, collection, embedding_model)
     if not context:
@@ -129,7 +123,7 @@ Answer:"""
 
     return query_groq(prompt)
 
-# ✅ Classify waste using MobileNetV2
+# Classify waste using MobileNetV2
 def classify_waste(image, model):
     class_names = ["cardboard", "glass", "metal", "paper", "plastic", "trash"]
     img = tf.image.resize(image, (224, 224)) / 255.0
@@ -151,7 +145,7 @@ def classify_waste(image, model):
     suggestion = disposal_methods.get(predicted_class, "Unknown waste type.")
     return predicted_class, confidence, suggestion
 
-# ✅ Streamlit UI
+# Streamlit UI
 def main():
     st.title("♻️ Waste Management Chatbot")
     st.write("Ask any question related to waste management or upload an image to classify waste.")
@@ -168,10 +162,10 @@ def main():
             load_into_chroma(data, collection, embedding_model)
             st.success(f"✅ Loaded {len(data)} articles into ChromaDB on startup!")
 
-    # ✅ Tabs for text or image input
+    # Tabs for text or image input
     tab1, tab2 = st.tabs(["💬 Ask a Question", "📸 Upload Image"])
 
-    # ✅ Text-based Q&A
+    # Text-based Q&A
     with tab1:
         question = st.text_input(
             "💬 Ask a question:",
@@ -184,7 +178,7 @@ def main():
                 response = ask_question(question, collection, embedding_model)
                 st.write(f"**🤖 Answer:** {response}")
 
-    # ✅ Image-based waste classification
+    # Image-based waste classification
     with tab2:
         uploaded_file = st.file_uploader("📸 Upload an image of waste:", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
