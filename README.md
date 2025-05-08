@@ -37,8 +37,8 @@ An intelligent waste management system that integrates AI-driven image classific
 
 1. *Clone the Repository*
 
-   git clone https://github.com/yourusername/waste-management-chatbot.git
-   cd waste-management-chatbot
+   https://github.com/sridevisundar/wastemgmt_chatbot.git
+   cd wastemgmt_chatbot
 
 2. Replace the your-key-here with groq api key in app.py:
 
@@ -53,16 +53,13 @@ An intelligent waste management system that integrates AI-driven image classific
 
 4. Access the App Open your browser and go to: http://localhost:8501
 
-###License
+##License
 
 This project is licensed under the MIT License.
 
-Acknowledgements
+##Acknowledgements
 
 Groq API
-
 Streamlit
-
 PyTorch
-
 HuggingFace Transformers
